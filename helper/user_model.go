@@ -3,7 +3,6 @@ package helper
 import "github.com/MCPutro/toko-buku-go/entity"
 
 type UserCreateRequest struct {
-	ID       uint8
 	Email    string
 	UserName string
 	Password string

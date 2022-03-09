@@ -55,7 +55,7 @@ func (u *UserServiceImpl) Login(ctx context.Context, user helper.UserLoginReques
 	checkPassword := u.checkPassword(user.Password, existingUser.Password)
 
 	if !checkPassword {
-		return nil, errors.New("password salah")
+		return nil, errors.New("invalid credential")
 	} else {
 		return &helper.UserLoginResponse{
 			ID:       existingUser.ID,
