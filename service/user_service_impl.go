@@ -13,11 +13,16 @@ import (
 type UserServiceImpl struct {
 	UserRepo repository.UserRepository
 	DB       *gorm.DB
+	Jwt      JwtService
 }
 
-func NewUserService(userRepo repository.UserRepository, DB *gorm.DB) UserService {
-	return &UserServiceImpl{UserRepo: userRepo, DB: DB}
+func NewUserService(userRepo repository.UserRepository, DB *gorm.DB, jwt JwtService) UserService {
+	return &UserServiceImpl{UserRepo: userRepo, DB: DB, Jwt: jwt}
 }
+
+//func NewUserService2(userRepo repository.UserRepository, DB *gorm.DB) UserService {
+//	return &UserServiceImpl{UserRepo: userRepo, DB: DB}
+//}
 
 func (u *UserServiceImpl) CreateNewUser(ctx context.Context, user helper.UserCreateRequest) (*helper.UserCreateResponse, error) {
 	encodePass, err := u.encodePassword(user.Password)
@@ -57,11 +62,13 @@ func (u *UserServiceImpl) Login(ctx context.Context, user helper.UserLoginReques
 	if !checkPassword {
 		return nil, errors.New("invalid credential")
 	} else {
+		token := u.Jwt.GenerateToken(user.Email)
+
 		return &helper.UserLoginResponse{
 			ID:       existingUser.ID,
 			UserName: existingUser.UserName,
 			Email:    existingUser.Email,
-			Token:    "belum jadi",
+			Token:    token,
 		}, nil
 	}
 }

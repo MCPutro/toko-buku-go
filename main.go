@@ -18,8 +18,9 @@ func main() {
 		return
 	}
 
+	jwtService := service.NewJwtServiceImpl()
 	userRepository := repository.NewUserRepository()
-	userService := service.NewUserService(userRepository, db)
+	userService := service.NewUserService(userRepository, db, jwtService)
 	userController := controller.NewUserController(userService)
 
 	r := mux.NewRouter()
