@@ -3,7 +3,7 @@ package entity
 type UserType int8
 
 const (
-	Admin UserType = iota
+	Admin UserType = iota //dimulai dari 0 dan seterurnya
 	Customer
 )
 

@@ -42,7 +42,7 @@ func (b *BookServiceImpl) AddBook(ctx context.Context, book helper.BookRequest) 
 	}, nil
 }
 
-func (b *BookServiceImpl) UpdateStock(ctx context.Context, bookId uint8, newStock uint8) (*helper.BookResponse, error) {
+func (b *BookServiceImpl) AddStock(ctx context.Context, bookId uint8, newStock uint8) (*helper.BookResponse, error) {
 	existingBook, err := b.Repository.FindById(ctx, b.DB, bookId)
 	if err != nil {
 		return nil, err
@@ -52,8 +52,29 @@ func (b *BookServiceImpl) UpdateStock(ctx context.Context, bookId uint8, newStoc
 	}
 
 	// if exists than update stock
-	existingBook.Stock = newStock
+	existingBook.Stock += newStock
 	result, err := b.Repository.Save(ctx, b.DB, *existingBook)
 	fmt.Println(result)
 	return nil, err
+}
+func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookResponse, error) {
+	books, err := b.Repository.FindAll(ctx, b.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	var tmp []helper.BookResponse
+
+	for _, book := range *books {
+		tmp = append(tmp, helper.BookResponse{
+			ID:       book.ID,
+			Title:    book.Title,
+			Author:   book.Author,
+			Stock:    book.Stock,
+			Price:    book.Price,
+			Discount: book.Discount,
+		})
+	}
+
+	return &tmp, nil
 }

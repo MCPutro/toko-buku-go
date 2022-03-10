@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"github.com/MCPutro/toko-buku-go/entity"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
 	"log"
@@ -23,13 +24,15 @@ func NewJwtServiceImpl() JwtService {
 }
 
 type jwtCustomClaim struct {
-	Id string
+	Id   string
+	Role entity.UserType
 	jwt.RegisteredClaims
 }
 
-func (j *jwtServiceImpl) GenerateToken(id string) string {
+func (j *jwtServiceImpl) GenerateToken(id string, userType entity.UserType) string {
 	claims := jwtCustomClaim{
-		Id: id,
+		Id:   id,
+		Role: userType,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    j.issuer,
 			ExpiresAt: jwt.NewNumericDate(time.Now().AddDate(0, 0, 1)),

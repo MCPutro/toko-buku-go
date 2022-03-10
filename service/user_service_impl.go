@@ -20,10 +20,6 @@ func NewUserService(userRepo repository.UserRepository, DB *gorm.DB, jwt JwtServ
 	return &UserServiceImpl{UserRepo: userRepo, DB: DB, Jwt: jwt}
 }
 
-//func NewUserService2(userRepo repository.UserRepository, DB *gorm.DB) UserService {
-//	return &UserServiceImpl{UserRepo: userRepo, DB: DB}
-//}
-
 func (u *UserServiceImpl) CreateNewUser(ctx context.Context, user helper.UserCreateRequest) (*helper.UserCreateResponse, error) {
 	encodePass, err := u.encodePassword(user.Password)
 	if err != nil {
@@ -62,7 +58,7 @@ func (u *UserServiceImpl) Login(ctx context.Context, user helper.UserLoginReques
 	if !checkPassword {
 		return nil, errors.New("invalid credential")
 	} else {
-		token := u.Jwt.GenerateToken(user.Email)
+		token := u.Jwt.GenerateToken(existingUser.Email, existingUser.UserType)
 
 		return &helper.UserLoginResponse{
 			ID:       existingUser.ID,
