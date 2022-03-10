@@ -9,6 +9,7 @@ import (
 	"github.com/MCPutro/toko-buku-go/repository"
 	"github.com/MCPutro/toko-buku-go/service"
 	"github.com/gorilla/mux"
+	"html/template"
 	"net/http"
 )
 
@@ -35,6 +36,7 @@ func main() {
 
 	user := r.PathPrefix("/user").Subrouter()
 	user.HandleFunc("/SignUp", userController.SignUp).Methods("POST")
+	user.HandleFunc("/SignIn", me).Methods("GET")
 	user.HandleFunc("/SignIn", userController.SignIn).Methods("POST")
 	user.HandleFunc("/Books", bookController.FindAll).Methods("GET")
 
@@ -48,4 +50,9 @@ func main() {
 	if err2 != nil {
 		helper.PanicIfError(err2)
 	}
+}
+
+func me(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("view/login.gohtml")
+	t.Execute(w, nil)
 }

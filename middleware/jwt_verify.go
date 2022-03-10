@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+	"github.com/MCPutro/toko-buku-go/entity"
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/service"
 	"github.com/golang-jwt/jwt/v4"
@@ -56,7 +58,7 @@ func (j *JwtGate) JwtVerify(next http.Handler) http.Handler {
 			regex := regexp.MustCompile("/book/*")
 
 			if regex.MatchString(path) {
-				if claims["Role"].(float64) != 0 {
+				if fmt.Sprint(claims["Role"]) != fmt.Sprint(entity.Admin) {
 					w.WriteHeader(http.StatusForbidden)
 					helper.WriteToResponseBody(w, helper.Response{
 						Status:  "error",

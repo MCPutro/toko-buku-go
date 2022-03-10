@@ -40,7 +40,23 @@ func (u *UserControllerImpl) SignUp(w http.ResponseWriter, r *http.Request) {
 
 func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
 	var userLogin helper.UserLoginRequest
-	helper.ReadFromRequestBody(r, &userLogin)
+
+	contentType := r.Header.Get("Content-Type")
+
+	if contentType == "application/x-www-form-urlencoded" {
+		err := r.ParseForm()
+		if err != nil {
+			helper.WriteToResponseBody(w, err)
+			return
+		}
+
+		userLogin = helper.UserLoginRequest{
+			Email:    r.PostFormValue("Email"),
+			Password: r.PostFormValue("Password"),
+		}
+	} else {
+		helper.ReadFromRequestBody(r, &userLogin)
+	}
 
 	loginResponse, err := u.service.Login(r.Context(), userLogin)
 
