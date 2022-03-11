@@ -26,7 +26,7 @@ func (u *UserServiceImpl) CreateNewUser(ctx context.Context, user helper.UserCre
 		return nil, err
 	}
 
-	newUser := entity.User{
+	newUser := &entity.User{
 		Email:    user.Email,
 		UserName: user.UserName,
 		Password: encodePass,
@@ -64,6 +64,7 @@ func (u *UserServiceImpl) Login(ctx context.Context, user helper.UserLoginReques
 			ID:       existingUser.ID,
 			UserName: existingUser.UserName,
 			Email:    existingUser.Email,
+			UserType: existingUser.UserType,
 			Token:    token,
 		}, nil
 	}

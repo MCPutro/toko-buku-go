@@ -26,4 +26,5 @@ type UserLoginResponse struct {
 	UserName string
 	Email    string
 	Token    string
+	UserType entity.UserType
 }

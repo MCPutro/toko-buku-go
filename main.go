@@ -30,25 +30,37 @@ func main() {
 	bookService := service.NewBookService(bookRepository, db)
 	bookController := controller.NewBookController(bookService)
 
-	jwtGate := middleware.NewJwtGate(jwtService)
+	transactionRepository := repository.NewTransactionRepository()
+	transactionService := service.NewTransactionService(transactionRepository, bookRepository, db)
+	transactionController := controller.NewTransactionController(transactionService)
 
 	r := mux.NewRouter()
+	r.HandleFunc("/", home).Methods("GET")
 
 	user := r.PathPrefix("/user").Subrouter()
 	user.HandleFunc("/SignUp", userController.SignUp).Methods("POST")
 	user.HandleFunc("/SignIn", me).Methods("GET")
 	user.HandleFunc("/SignIn", userController.SignIn).Methods("POST")
-	user.HandleFunc("/Books", bookController.FindAll).Methods("GET")
+	user.HandleFunc("/Books", bookController.GetListBook).Methods("GET")
 
 	book := r.PathPrefix("/book").Subrouter()
-	book.Use(jwtGate.JwtVerify)
 	book.HandleFunc("/Add", bookController.AddBook).Methods("POST")
 	book.HandleFunc("/AddStock/{BookId}/{AddStock}", bookController.AddStock).Methods("GET")
-	book.HandleFunc("/All", bookController.FindAll).Methods("GET")
+	book.HandleFunc("/All", bookController.GetListBook).Methods("GET")
+	book.HandleFunc("/Delete/{BookId}", bookController.DeleteBook).Methods("GET")
 
-	err2 := http.ListenAndServe(":8080", r)
+	r.HandleFunc("/transaction", transactionController.BuyBook).Methods("POST")
+
+	err2 := http.ListenAndServe(":8080", middleware.NewMiddleware(r, jwtService))
 	if err2 != nil {
 		helper.PanicIfError(err2)
+	}
+}
+
+func home(w http.ResponseWriter, r *http.Request) {
+	err := MyTemplates.ExecuteTemplate(w, "home.gohtml", "/user/SignIn")
+	if err != nil {
+		return
 	}
 }
 

@@ -20,7 +20,7 @@ func NewBookService(bookRepo repository.BookRepository, DB *gorm.DB) BookService
 }
 
 func (b *BookServiceImpl) AddBook(ctx context.Context, book helper.BookRequest) (*helper.BookResponse, error) {
-	newBook := entity.Book{
+	newBook := &entity.Book{
 		Title:    book.Title,
 		Author:   book.Author,
 		Stock:    book.Stock,
@@ -53,10 +53,11 @@ func (b *BookServiceImpl) AddStock(ctx context.Context, bookId uint8, newStock u
 
 	// if exists than update stock
 	existingBook.Stock += newStock
-	result, err := b.Repository.Save(ctx, b.DB, *existingBook)
+	result, err := b.Repository.Save(ctx, b.DB, existingBook)
 	fmt.Println(result)
 	return nil, err
 }
+
 func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookResponse, error) {
 	books, err := b.Repository.FindAll(ctx, b.DB)
 	if err != nil {
@@ -77,4 +78,15 @@ func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookRespon
 	}
 
 	return &tmp, nil
+}
+
+func (b *BookServiceImpl) DeleteBook(ctx context.Context, bookId uint8) error {
+	result := b.DB.WithContext(ctx).Delete(&entity.Book{}, bookId)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+
 }

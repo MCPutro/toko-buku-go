@@ -7,7 +7,7 @@ type Transaction struct {
 	Date     time.Time
 	Customer string
 	BookID   uint8
-	Quantity float32
+	Quantity uint8
 	Discount float32
 	Total    float32
 }

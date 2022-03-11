@@ -13,7 +13,7 @@ func NewBookRepository() BookRepository {
 	return &BookRepositoryImpl{}
 }
 
-func (b *BookRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, book entity.Book) (uint8, error) {
+func (b *BookRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, book *entity.Book) (uint8, error) {
 
 	result := DB.WithContext(ctx).Save(&book)
 

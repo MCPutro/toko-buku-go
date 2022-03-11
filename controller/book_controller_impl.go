@@ -40,7 +40,7 @@ func (b *BookControllerImpl) AddBook(w http.ResponseWriter, r *http.Request) {
 	helper.WriteToResponseBody(w, webResponse)
 }
 
-func (b *BookControllerImpl) FindAll(w http.ResponseWriter, r *http.Request) {
+func (b *BookControllerImpl) GetListBook(w http.ResponseWriter, r *http.Request) {
 
 	//helper.ReadFromRequestBody(r, &newBook)
 
@@ -84,6 +84,30 @@ func (b *BookControllerImpl) AddStock(w http.ResponseWriter, r *http.Request) {
 		webResponse = helper.Response{
 			Status: "success",
 			Data:   bookResponse,
+		}
+	}
+
+	helper.WriteToResponseBody(w, webResponse)
+}
+
+func (b *BookControllerImpl) DeleteBook(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+
+	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
+
+	err := b.service.DeleteBook(r.Context(), uint8(bookId))
+
+	var webResponse helper.Response
+
+	if err != nil {
+		webResponse = helper.Response{
+			Status:  "error",
+			Message: err.Error(),
+			Data:    nil,
+		}
+	} else {
+		webResponse = helper.Response{
+			Status: "success",
 		}
 	}
 

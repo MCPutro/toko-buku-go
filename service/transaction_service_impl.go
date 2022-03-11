@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/MCPutro/toko-buku-go/entity"
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/repository"
@@ -28,15 +27,16 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 		return nil, errors.New("book not found")
 	}
 
-	fmt.Println(book)
+	//cek if stock >= quantity
+	if book.Stock < request.Quantity {
+		return nil, errors.New("stock not enough")
+	}
 
-	total := request.Quantity * book.Price
+	total := float32(request.Quantity) + book.Price
 	discount := total * book.Discount
 	amount := total - discount
 
-	fmt.Println(amount)
-
-	newTrx := entity.Transaction{
+	newTrx := &entity.Transaction{
 		Date:     time.Now(),
 		Customer: request.Customer,
 		BookID:   request.BookID,
@@ -45,9 +45,14 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 		Total:    amount,
 	}
 
-	trxId, err := t.TrxRepo.Save(ctx, t.db, newTrx)
+	trxId, err2 := t.TrxRepo.Save(ctx, t.db, newTrx)
+
+	if err2 != nil {
+		//update stock
+
+	}
 
 	newTrx.ID = trxId
 
-	return &newTrx, nil
+	return newTrx, nil
 }
