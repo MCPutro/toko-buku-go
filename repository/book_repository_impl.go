@@ -14,8 +14,11 @@ func NewBookRepository() BookRepository {
 }
 
 func (b *BookRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, book *entity.Book) (uint8, error) {
+	var result *gorm.DB
 
-	result := DB.WithContext(ctx).Save(&book)
+	if DB.WithContext(ctx).Where("id = ?", book.ID).Updates(&book).RowsAffected == 0 {
+		result = DB.WithContext(ctx).Create(&book)
+	}
 
 	if result.Error != nil {
 		return 0, result.Error

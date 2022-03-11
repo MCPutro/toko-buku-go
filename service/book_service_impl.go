@@ -64,6 +64,10 @@ func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookRespon
 		return nil, err
 	}
 
+	if books == nil {
+		return nil, nil
+	}
+
 	var tmp []helper.BookResponse
 
 	for _, book := range *books {

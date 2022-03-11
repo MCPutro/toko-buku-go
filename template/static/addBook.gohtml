@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+        form {
+            border: 3px solid #f1f1f1;
+            border-radius: 2px;
+        }
+
+        input[type=text], input[type=number] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #04AA6D;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+
+        .container {
+            padding: 16px;
+        }
+
+
+
+        .center {
+            margin: auto;
+            width: 40%;
+            height: 10px;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+<h2 style="text-align: center">New Book</h2>
+<div class="center">
+    <form action="/book/Add" method="post">
+        <div class="container">
+            <label for="Title"><b>Title</b></label>
+            <input type="text" placeholder="" name="Title" minlength="5" required>
+
+            <label for="Author"><b>Author</b></label>
+            <input type="text" placeholder="" name="Author" minlength="5" required>
+
+            <label for="Stock"><b>Stock</b></label>
+            <input type="number" min="1" placeholder="" name="Stock" minlength="5" required>
+
+            <label for="Price"><b>Price</b></label>
+            <input type="number" min="1" placeholder="" name="Price" minlength="5" required>
+
+            <label for="Discount"><b>Discount</b></label>
+            <input type="number" min="0" max="100" step="any" placeholder="" name="Discount" minlength="5" required>
+
+            <button type="submit">Add</button>
+
+        </div>
+    </form>
+</div>
+</body>
+</html>

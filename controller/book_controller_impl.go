@@ -18,7 +18,28 @@ func NewBookController(service service.BookService) BookController {
 
 func (b *BookControllerImpl) AddBook(w http.ResponseWriter, r *http.Request) {
 	var newBook helper.BookRequest
-	helper.ReadFromRequestBody(r, &newBook)
+	contentType := r.Header.Get("Content-Type")
+	if contentType == "application/x-www-form-urlencoded" {
+		err := r.ParseForm()
+		if err != nil {
+			helper.WriteToResponseBody(w, err)
+			return
+		}
+
+		s, _ := strconv.ParseUint(r.PostFormValue("Stock"), 10, 8)
+		p, _ := strconv.ParseFloat(r.PostFormValue("Price"), 32)
+		d, _ := strconv.ParseFloat(r.PostFormValue("Price"), 32)
+
+		newBook = helper.BookRequest{
+			Title:    r.PostFormValue("Title"),
+			Author:   r.PostFormValue("Author"),
+			Stock:    uint8(s),
+			Price:    float32(p),
+			Discount: float32(d),
+		}
+	} else {
+		helper.ReadFromRequestBody(r, &newBook)
+	}
 
 	addBookResponse, err := b.service.AddBook(r.Context(), newBook)
 
@@ -37,12 +58,14 @@ func (b *BookControllerImpl) AddBook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	if contentType == "application/x-www-form-urlencoded" {
+		http.Redirect(w, r, "/listBookAdmin", http.StatusSeeOther)
+	} else {
+		helper.WriteToResponseBody(w, webResponse)
+	}
 }
 
 func (b *BookControllerImpl) GetListBook(w http.ResponseWriter, r *http.Request) {
-
-	//helper.ReadFromRequestBody(r, &newBook)
 
 	book, err := b.service.GetListBook(r.Context())
 

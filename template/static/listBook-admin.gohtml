@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #books {
+                font-family: Arial, Helvetica, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            #books td, #books th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            #books tr:nth-child(even){background-color: #f2f2f2;}
+
+            #books tr:hover {background-color: #ddd;}
+
+            #books th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: center;
+                background-color: #04AA6D;
+                color: white;
+            }
+
+
+            #deleteButton {
+                background-color: white;
+                color: black;
+                border: 2px solid #f44336;
+                padding: 8px 24px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                border-radius: 4px;
+                margin: 2px;
+            }
+
+            #deleteButton:hover{
+                background-color: #f44336;
+                color: white;
+                border: 2px solid #f44336;
+            }
+
+            #InfoBuyBook{
+                background-color: white;
+                color: black;
+                border: 2px solid green;
+                padding: 8px 24px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                border-radius: 4px;
+                margin: 2px;
+            }
+
+            #InfoBuyBook:hover{
+                background-color: green;
+                color: white;
+                border: 2px solid green;
+            }
+
+            #newBook {
+                background-color: white;
+                color: #008CBA;
+                border: 2px solid #008CBA;
+                padding: 10px 24px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                border-radius: 4px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            #newBook:hover {
+                background-color: #008CBA;
+                color: white;
+            }
+
+            a:hover, a:active {
+                background-color: red;
+            }
+
+            .center {
+                margin: auto;
+                width: 80%;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 style="text-align: center">Books Table</h1>
+
+        <div class="center">
+            <a href="/BookInfoAdmin" id="newBook">Add Book</a>
+            <table id="books">
+                <tr>
+                <th>#</th>
+                {{/*        <th>ID</th>*/}}
+                <th>Title</th>
+                <th>Author</th>
+                <th>Stock</th>
+                <th>Price</th>
+                <th>Discount</th>
+                <th>Action</th>
+            </tr>
+                {{range $indexElement, $element := .}}
+                <tr>
+                    <td style="text-align: center">{{$indexElement}}</td>
+                    {{/*<td>{{$element.ID}}</td>*/}}
+                    <td>{{$element.Title}}</td>
+                    <td>{{$element.Author}}</td>
+                    <td style="text-align: center">{{$element.Stock}}</td>
+                    <td style="text-align: center">{{$element.Price}}</td>
+                    <td style="text-align: center">{{$element.Discount}}</td>
+                    <td style="text-align: center">
+                        <a href="#" id="InfoBuyBook">INFO</a>
+                        <a href="/DeleteBookAdmin/{{$element.ID}}" id="deleteButton">DELETE</a>
+                    </td>
+                </tr>
+                {{end}}
+        </table>
+
+        </div>
+    </body>
+</html>
+
+

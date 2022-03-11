@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+	"github.com/MCPutro/toko-buku-go/entity"
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/service"
 	"net/http"
@@ -20,29 +22,31 @@ func (u *UserControllerImpl) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	newUserResponse, err := u.service.CreateNewUser(r.Context(), newUser)
 
-	var webResponse helper.Response
+	helper.WriteToResponseBody2(w, err, newUserResponse)
 
-	if err != nil {
-		webResponse = helper.Response{
-			Status:  "error",
-			Message: err.Error(),
-			Data:    nil,
-		}
-	} else {
-		webResponse = helper.Response{
-			Status: "success",
-			Data:   newUserResponse,
-		}
-	}
-
-	helper.WriteToResponseBody(w, webResponse)
+	//var webResponse helper.Response
+	//
+	//if err != nil {
+	//	webResponse = helper.Response{
+	//		Status:  "error",
+	//		Message: err.Error(),
+	//		Data:    nil,
+	//	}
+	//} else {
+	//	webResponse = helper.Response{
+	//		Status: "success",
+	//		Data:   newUserResponse,
+	//	}
+	//}
+	//
+	//helper.WriteToResponseBody(w, webResponse)
 }
 
 func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
 	var userLogin helper.UserLoginRequest
 
+	//identify content-type
 	contentType := r.Header.Get("Content-Type")
-
 	if contentType == "application/x-www-form-urlencoded" {
 		err := r.ParseForm()
 		if err != nil {
@@ -76,5 +80,15 @@ func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	if contentType == "application/x-www-form-urlencoded" {
+		if fmt.Sprint(loginResponse.UserType) == fmt.Sprint(entity.Admin) {
+			//redirect to list book admin
+			http.Redirect(w, r, "/listBookAdmin", http.StatusSeeOther)
+		} else {
+			w.Write([]byte("bukan admin"))
+		}
+	} else {
+		helper.WriteToResponseBody(w, webResponse)
+	}
+
 }

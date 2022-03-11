@@ -17,3 +17,22 @@ func WriteToResponseBody(writer http.ResponseWriter, response interface{}) {
 	err := encoder.Encode(response)
 	PanicIfError(err)
 }
+
+func WriteToResponseBody2(w http.ResponseWriter, errParam error, data interface{}) {
+	var webResponse Response
+
+	if errParam != nil {
+		webResponse = Response{
+			Status:  "error",
+			Message: errParam.Error(),
+			Data:    nil,
+		}
+	} else {
+		webResponse = Response{
+			Status: "success",
+			Data:   data,
+		}
+	}
+
+	WriteToResponseBody(w, webResponse)
+}
