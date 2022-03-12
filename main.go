@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"github.com/MCPutro/toko-buku-go/config"
 	"github.com/MCPutro/toko-buku-go/controller"
 	"github.com/MCPutro/toko-buku-go/entity"
@@ -43,24 +42,26 @@ func main() {
 	r := mux.NewRouter()
 
 	restUser := r.PathPrefix("/user").Subrouter()
-	restUser.HandleFunc("/SignUp", userController.SignUp).Methods("POST")
-	restUser.HandleFunc("/SignIn", userController.SignIn).Methods("POST")
-	restUser.HandleFunc("/Books", bookController.GetListBook).Methods("GET")
+	restUser.HandleFunc("/SignUp", userController.SignUp).Methods(http.MethodPost)
+	restUser.HandleFunc("/SignIn", userController.SignIn).Methods(http.MethodPost)
+	restUser.HandleFunc("/Books", bookController.GetListBook).Methods(http.MethodGet)
 
 	restBook := r.PathPrefix("/book").Subrouter()
-	restBook.HandleFunc("/Add", bookController.AddBook).Methods("POST")
-	restBook.HandleFunc("/AddStock/{BookId}/{AddStock}", bookController.AddStock).Methods("GET")
-	restBook.HandleFunc("/All", bookController.GetListBook).Methods("GET")
-	restBook.HandleFunc("/Delete/{BookId}", bookController.DeleteBook).Methods("GET")
+	restBook.HandleFunc("/Add", bookController.AddBook).Methods(http.MethodPost)
+	restBook.HandleFunc("/All", bookController.GetListBook).Methods(http.MethodGet)
+	restBook.HandleFunc("/{BookId}", bookController.GetBookById).Methods(http.MethodGet)
+	restBook.HandleFunc("/Update/{BookId}", bookController.UpdateBook).Methods(http.MethodPost)
+	restBook.HandleFunc("/Delete/{BookId}", bookController.DeleteBook).Methods(http.MethodGet)
 
-	r.HandleFunc("/transaction", transactionController.BuyBook).Methods("POST")
+	r.HandleFunc("/transaction", transactionController.BuyBook).Methods(http.MethodPost)
 
 	//form ui website
 	r.HandleFunc("/", home).Methods(http.MethodGet)
 	r.HandleFunc("/login", SignInForm).Methods(http.MethodGet)
 	r.HandleFunc("/listBookAdmin", ListBookAdmin).Methods(http.MethodGet)
 	r.HandleFunc("/DeleteBookAdmin/{BookId}", DeleteBookAdmin).Methods(http.MethodGet)
-	r.HandleFunc("/BookInfoAdmin", BookInfoForm).Methods(http.MethodGet)
+	r.HandleFunc("/AddBookFormAdmin", AddBookForm).Methods(http.MethodGet)
+	r.HandleFunc("/BookInfoFormAdmin/{BookId}", BookInfoFormAdmin).Methods(http.MethodGet)
 
 	err2 := http.ListenAndServe(":8080", middleware.NewMiddleware(r, jwtService))
 	if err2 != nil {
@@ -83,7 +84,7 @@ func SignInForm(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListBookAdmin(w http.ResponseWriter, r *http.Request) {
-	listBook, _ := bookService.GetListBook(context.Background())
+	listBook, _ := bookService.GetListBook(r.Context())
 
 	err := t.MyTemplates.ExecuteTemplate(w, "listBook-admin.gohtml", listBook)
 	if err != nil {
@@ -95,15 +96,35 @@ func DeleteBookAdmin(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 
 	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
-	bookService.DeleteBook(r.Context(), uint8(bookId))
+	err := bookService.DeleteBook(r.Context(), uint8(bookId))
+	if err != nil {
+		return
+	}
 
-	http.Redirect(w, r, "http://"+r.Host+"/listBookAdmin", http.StatusPermanentRedirect)
+	http.Redirect(w, r, "/listBookAdmin", http.StatusPermanentRedirect)
 	//ListBookAdmin(w, r)
 }
 
-func BookInfoForm(w http.ResponseWriter, r *http.Request) {
+func AddBookForm(w http.ResponseWriter, r *http.Request) {
 	err := t.MyTemplates.ExecuteTemplate(w, "addBook.gohtml", nil)
 	if err != nil {
+		return
+	}
+}
+
+func BookInfoFormAdmin(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+
+	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
+
+	bookById, err := bookService.GetBookById(r.Context(), uint8(bookId))
+
+	if err != nil {
+		return
+	}
+
+	err2 := t.MyTemplates.ExecuteTemplate(w, "bookInfo.gohtml", bookById)
+	if err2 != nil {
 		return
 	}
 }

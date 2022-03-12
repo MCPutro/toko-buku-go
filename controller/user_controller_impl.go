@@ -85,7 +85,10 @@ func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
 			//redirect to list book admin
 			http.Redirect(w, r, "/listBookAdmin", http.StatusSeeOther)
 		} else {
-			w.Write([]byte("bukan admin"))
+			_, err := w.Write([]byte("bukan admin"))
+			if err != nil {
+				return
+			}
 		}
 	} else {
 		helper.WriteToResponseBody(w, webResponse)

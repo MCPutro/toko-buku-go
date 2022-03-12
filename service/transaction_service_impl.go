@@ -32,8 +32,8 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 		return nil, errors.New("stock not enough")
 	}
 
-	total := float32(request.Quantity) + book.Price
-	discount := total * book.Discount
+	total := float32(request.Quantity) * book.Price
+	discount := total * float32(book.Discount/100)
 	amount := total - discount
 
 	newTrx := &entity.Transaction{

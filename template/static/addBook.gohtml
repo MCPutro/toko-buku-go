@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New Book</title>
     <style>
         body {font-family: Arial, Helvetica, sans-serif;}
         form {
@@ -56,19 +57,29 @@
     <form action="/book/Add" method="post">
         <div class="container">
             <label for="Title"><b>Title</b></label>
-            <input type="text" placeholder="" name="Title" minlength="5" required>
+            <label>
+                <input type="text" placeholder="" name="Title" minlength="5" required>
+            </label>
 
             <label for="Author"><b>Author</b></label>
-            <input type="text" placeholder="" name="Author" minlength="5" required>
+            <label>
+                <input type="text" placeholder="" name="Author" minlength="5" required>
+            </label>
 
             <label for="Stock"><b>Stock</b></label>
-            <input type="number" min="1" placeholder="" name="Stock" minlength="5" required>
+            <label>
+                <input type="number" min="1" placeholder="" name="Stock" minlength="5" required>
+            </label>
 
             <label for="Price"><b>Price</b></label>
-            <input type="number" min="1" placeholder="" name="Price" minlength="5" required>
+            <label>
+                <input type="number" min="1" placeholder="" name="Price" minlength="5" required>
+            </label>
 
-            <label for="Discount"><b>Discount</b></label>
-            <input type="number" min="0" max="100" step="any" placeholder="" name="Discount" minlength="5" required>
+            <label for="Discount"><b>Discount %</b></label>
+            <label>
+                <input type="number" min="0" max="100" placeholder="" name="Discount" required>
+            </label>
 
             <button type="submit">Add</button>
 

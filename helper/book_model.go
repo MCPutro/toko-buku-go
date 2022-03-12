@@ -5,7 +5,7 @@ type BookRequest struct {
 	Author   string
 	Stock    uint8
 	Price    float32
-	Discount float32
+	Discount uint8
 }
 
 type BookResponse struct {
@@ -14,7 +14,7 @@ type BookResponse struct {
 	Author   string
 	Stock    uint8
 	Price    float32
-	Discount float32
+	Discount uint8
 }
 
 //type UpdateBookRequest struct {

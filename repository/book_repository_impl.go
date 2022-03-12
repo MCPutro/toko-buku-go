@@ -14,14 +14,12 @@ func NewBookRepository() BookRepository {
 }
 
 func (b *BookRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, book *entity.Book) (uint8, error) {
-	var result *gorm.DB
 
 	if DB.WithContext(ctx).Where("id = ?", book.ID).Updates(&book).RowsAffected == 0 {
-		result = DB.WithContext(ctx).Create(&book)
-	}
-
-	if result.Error != nil {
-		return 0, result.Error
+		result := DB.WithContext(ctx).Create(&book)
+		if result.Error != nil {
+			return 0, result.Error
+		}
 	}
 
 	return book.ID, nil
@@ -30,7 +28,7 @@ func (b *BookRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, book *entity
 func (b *BookRepositoryImpl) FindAll(ctx context.Context, DB *gorm.DB) (*[]entity.Book, error) {
 	var listBook []entity.Book
 
-	find := DB.WithContext(ctx).Find(&listBook)
+	find := DB.WithContext(ctx).Order("id desc").Find(&listBook)
 
 	if find.Error != nil {
 		return nil, find.Error

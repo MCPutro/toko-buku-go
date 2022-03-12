@@ -1,6 +1,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Sign In</title>
     <style>
         html,body {
             background: #F5F5F5;
@@ -63,10 +64,14 @@
         <form action="/user/SignIn" method="post">
             <div class="formContainer">
                 <label for="Email"><b>Email</b></label>
-                <input type="email" placeholder="Enter Email" name="Email" required> </input>
+                <label>
+                    <input type="email" placeholder="Enter Email" name="Email" required>
+                </label>
 
                 <label for="Password"><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="Password" required> </input>
+                <label>
+                    <input type="password" placeholder="Enter Password" name="Password" required>
+                </label>
 
                 <button type="submit">Sign In</button>
 

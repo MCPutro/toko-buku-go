@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/MCPutro/toko-buku-go/entity"
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/repository"
@@ -42,20 +40,30 @@ func (b *BookServiceImpl) AddBook(ctx context.Context, book helper.BookRequest) 
 	}, nil
 }
 
-func (b *BookServiceImpl) AddStock(ctx context.Context, bookId uint8, newStock uint8) (*helper.BookResponse, error) {
-	existingBook, err := b.Repository.FindById(ctx, b.DB, bookId)
+func (b *BookServiceImpl) UpdateBook(ctx context.Context, uBook helper.BookRequest, BookId uint8) (*helper.BookResponse, error) {
+	Book := &entity.Book{
+		ID:       BookId,
+		Title:    uBook.Title,
+		Author:   uBook.Author,
+		Stock:    uBook.Stock,
+		Price:    uBook.Price,
+		Discount: uBook.Discount,
+	}
+
+	save, err := b.Repository.Save(ctx, b.DB, Book)
+
 	if err != nil {
 		return nil, err
 	}
-	if existingBook == nil {
-		return nil, errors.New("book id doesn't exist")
-	}
 
-	// if exists than update stock
-	existingBook.Stock += newStock
-	result, err := b.Repository.Save(ctx, b.DB, existingBook)
-	fmt.Println(result)
-	return nil, err
+	return &helper.BookResponse{
+		ID:       save,
+		Title:    uBook.Title,
+		Author:   uBook.Author,
+		Stock:    uBook.Stock,
+		Price:    uBook.Price,
+		Discount: uBook.Discount,
+	}, nil
 }
 
 func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookResponse, error) {
@@ -85,12 +93,33 @@ func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookRespon
 }
 
 func (b *BookServiceImpl) DeleteBook(ctx context.Context, bookId uint8) error {
-	result := b.DB.WithContext(ctx).Delete(&entity.Book{}, bookId)
+	err := b.Repository.Delete(ctx, b.DB, bookId)
 
-	if result.Error != nil {
-		return result.Error
+	if err != nil {
+		return err
 	}
 
 	return nil
+}
+
+func (b *BookServiceImpl) GetBookById(ctx context.Context, bookId uint8) (*helper.BookResponse, error) {
+	book, err := b.Repository.FindById(ctx, b.DB, bookId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if book == nil {
+		return nil, nil
+	}
+
+	return &helper.BookResponse{
+		ID:       book.ID,
+		Title:    book.Title,
+		Author:   book.Author,
+		Stock:    book.Stock,
+		Price:    book.Price,
+		Discount: book.Discount,
+	}, nil
 
 }

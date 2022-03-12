@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Book Detail</title>
     <style>
         body {font-family: Arial, Helvetica, sans-serif;}
         form {
@@ -51,29 +52,36 @@
     </style>
 </head>
 <body>
-<h2 style="text-align: center">New Book</h2>
+<h2 style="text-align: center">Book Detail</h2>
 <div class="center">
-    <form action="/book/Add" method="post">
+    <form action="/book/Update/{{.ID}}" method="post">
         <div class="container">
-            <label for="ID"><b>ID</b></label>
-            <input type="number" name="ID" disabled value="">
-
             <label for="Title"><b>Title</b></label>
-            <input type="text" placeholder="Title" name="Title" minlength="5" required>
+            <label>
+                <input type="text" placeholder="Title" name="Title" minlength="5" value="{{.Title}}" required>
+            </label>
 
             <label for="Author"><b>Author</b></label>
-            <input type="text" placeholder="Author" name="Author" minlength="5" required>
+            <label>
+                <input type="text" placeholder="Author" name="Author" minlength="5" value="{{.Author}}" required>
+            </label>
 
             <label for="Stock"><b>Stock</b></label>
-            <input type="number" min="1" placeholder="Stock" name="Stock" minlength="5" required>
+            <label>
+                <input type="number" min="1" placeholder="Stock" name="Stock" minlength="5" value="{{.Stock}}" required>
+            </label>
 
             <label for="Price"><b>Price</b></label>
-            <input type="number" min="1" placeholder="Price" name="Price" minlength="5" required>
+            <label>
+                <input type="number" min="1" placeholder="Price" name="Price" minlength="5" value="{{.Price}}" required>
+            </label>
 
             <label for="Discount"><b>Discount</b></label>
-            <input type="number" min="0" max="100" step="any" placeholder="Discount" name="Discount" minlength="5" required>
+            <label>
+                <input type="number" min="0" max="100" step="any" placeholder="Discount" name="Discount" minlength="5" value="{{.Discount}}" required>
+            </label>
 
-            <button type="submit">Add</button>
+            <button type="submit">Update</button>
 
         </div>
     </form>

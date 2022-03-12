@@ -8,6 +8,6 @@ type Transaction struct {
 	Customer string
 	BookID   uint8
 	Quantity uint8
-	Discount float32
+	Discount uint8
 	Total    float32
 }

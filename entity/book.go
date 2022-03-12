@@ -6,6 +6,6 @@ type Book struct {
 	Author      string
 	Stock       uint8
 	Price       float32
-	Discount    float32
+	Discount    uint8
 	Transaction Transaction
 }
