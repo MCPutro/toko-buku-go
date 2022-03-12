@@ -7,8 +7,8 @@ import (
 
 type BookService interface {
 	AddBook(ctx context.Context, book helper.BookRequest) (*helper.BookResponse, error)
-	UpdateBook(ctx context.Context, uBook helper.BookRequest, BookId uint8) (*helper.BookResponse, error)
+	UpdateBook(ctx context.Context, uBook helper.BookRequest, BookId string) (*helper.BookResponse, error)
 	GetListBook(ctx context.Context) (*[]helper.BookResponse, error)
-	DeleteBook(ctx context.Context, bookId uint8) error
-	GetBookById(ctx context.Context, bookId uint8) (*helper.BookResponse, error)
+	DeleteBook(ctx context.Context, bookId string) error
+	GetBookById(ctx context.Context, bookId string) (*helper.BookResponse, error)
 }

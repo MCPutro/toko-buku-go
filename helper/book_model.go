@@ -9,7 +9,7 @@ type BookRequest struct {
 }
 
 type BookResponse struct {
-	ID       uint8
+	Id       string
 	Title    string
 	Author   string
 	Stock    uint8

@@ -81,14 +81,13 @@ func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if contentType == "application/x-www-form-urlencoded" {
+		helper.SetCookie(w, "email", userLogin.Email, 60)
+		helper.SetCookie(w, "token", loginResponse.Token, 60)
 		if fmt.Sprint(loginResponse.UserType) == fmt.Sprint(entity.Admin) {
 			//redirect to list book admin
 			http.Redirect(w, r, "/listBookAdmin", http.StatusSeeOther)
 		} else {
-			_, err := w.Write([]byte("bukan admin"))
-			if err != nil {
-				return
-			}
+			http.Redirect(w, r, "/listBook", http.StatusSeeOther)
 		}
 	} else {
 		helper.WriteToResponseBody(w, webResponse)

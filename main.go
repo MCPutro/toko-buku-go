@@ -11,7 +11,6 @@ import (
 	t "github.com/MCPutro/toko-buku-go/template"
 	"github.com/gorilla/mux"
 	"net/http"
-	"strconv"
 )
 
 var (
@@ -44,7 +43,7 @@ func main() {
 	restUser := r.PathPrefix("/user").Subrouter()
 	restUser.HandleFunc("/SignUp", userController.SignUp).Methods(http.MethodPost)
 	restUser.HandleFunc("/SignIn", userController.SignIn).Methods(http.MethodPost)
-	restUser.HandleFunc("/Books", bookController.GetListBook).Methods(http.MethodGet)
+	//restUser.HandleFunc("/Books", bookController.GetListBook).Methods(http.MethodGet)
 
 	restBook := r.PathPrefix("/book").Subrouter()
 	restBook.HandleFunc("/Add", bookController.AddBook).Methods(http.MethodPost)
@@ -58,10 +57,13 @@ func main() {
 	//form ui website
 	r.HandleFunc("/", home).Methods(http.MethodGet)
 	r.HandleFunc("/login", SignInForm).Methods(http.MethodGet)
+	//admin
 	r.HandleFunc("/listBookAdmin", ListBookAdmin).Methods(http.MethodGet)
 	r.HandleFunc("/DeleteBookAdmin/{BookId}", DeleteBookAdmin).Methods(http.MethodGet)
 	r.HandleFunc("/AddBookFormAdmin", AddBookForm).Methods(http.MethodGet)
 	r.HandleFunc("/BookInfoFormAdmin/{BookId}", BookInfoFormAdmin).Methods(http.MethodGet)
+	//customer
+	r.HandleFunc("/listBook", ListBook).Methods(http.MethodGet)
 
 	err2 := http.ListenAndServe(":8080", middleware.NewMiddleware(r, jwtService))
 	if err2 != nil {
@@ -86,7 +88,12 @@ func SignInForm(w http.ResponseWriter, r *http.Request) {
 func ListBookAdmin(w http.ResponseWriter, r *http.Request) {
 	listBook, _ := bookService.GetListBook(r.Context())
 
-	err := t.MyTemplates.ExecuteTemplate(w, "listBook-admin.gohtml", listBook)
+	data := map[string]interface{}{
+		"Email": helper.GetCookie(r, "email"),
+		"Books": listBook,
+	}
+
+	err := t.MyTemplates.ExecuteTemplate(w, "listBook-admin.gohtml", data)
 	if err != nil {
 		return
 	}
@@ -95,8 +102,7 @@ func ListBookAdmin(w http.ResponseWriter, r *http.Request) {
 func DeleteBookAdmin(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 
-	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
-	err := bookService.DeleteBook(r.Context(), uint8(bookId))
+	err := bookService.DeleteBook(r.Context(), param["BookId"])
 	if err != nil {
 		return
 	}
@@ -115,9 +121,7 @@ func AddBookForm(w http.ResponseWriter, r *http.Request) {
 func BookInfoFormAdmin(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 
-	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
-
-	bookById, err := bookService.GetBookById(r.Context(), uint8(bookId))
+	bookById, err := bookService.GetBookById(r.Context(), param["BookId"])
 
 	if err != nil {
 		return
@@ -125,6 +129,20 @@ func BookInfoFormAdmin(w http.ResponseWriter, r *http.Request) {
 
 	err2 := t.MyTemplates.ExecuteTemplate(w, "bookInfo.gohtml", bookById)
 	if err2 != nil {
+		return
+	}
+}
+
+func ListBook(w http.ResponseWriter, r *http.Request) {
+	listBook, _ := bookService.GetListBook(r.Context())
+
+	data := map[string]interface{}{
+		"Email": helper.GetCookie(r, "email"),
+		"Books": listBook,
+	}
+
+	err := t.MyTemplates.ExecuteTemplate(w, "listBook-customer.gohtml", data)
+	if err != nil {
 		return
 	}
 }

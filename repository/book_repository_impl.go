@@ -13,16 +13,16 @@ func NewBookRepository() BookRepository {
 	return &BookRepositoryImpl{}
 }
 
-func (b *BookRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, book *entity.Book) (uint8, error) {
+func (b *BookRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, book *entity.Book) (*entity.Book, error) {
 
 	if DB.WithContext(ctx).Where("id = ?", book.ID).Updates(&book).RowsAffected == 0 {
 		result := DB.WithContext(ctx).Create(&book)
 		if result.Error != nil {
-			return 0, result.Error
+			return nil, result.Error
 		}
 	}
 
-	return book.ID, nil
+	return book, nil
 }
 
 func (b *BookRepositoryImpl) FindAll(ctx context.Context, DB *gorm.DB) (*[]entity.Book, error) {
@@ -76,10 +76,10 @@ func (b *BookRepositoryImpl) FindByTitleAndAuthor(ctx context.Context, DB *gorm.
 
 }
 
-func (b *BookRepositoryImpl) FindById(ctx context.Context, DB *gorm.DB, id uint8) (*entity.Book, error) {
+func (b *BookRepositoryImpl) FindById(ctx context.Context, DB *gorm.DB, bookId string) (*entity.Book, error) {
 	var book entity.Book
 
-	find := DB.WithContext(ctx).First(&book, id)
+	find := DB.WithContext(ctx).Where("id = ?", bookId).First(&book)
 
 	if find.Error != nil {
 		return nil, find.Error
@@ -92,8 +92,8 @@ func (b *BookRepositoryImpl) FindById(ctx context.Context, DB *gorm.DB, id uint8
 	}
 }
 
-func (b *BookRepositoryImpl) Delete(ctx context.Context, DB *gorm.DB, id uint8) error {
-	tx := DB.WithContext(ctx).Delete(&entity.Book{}, id)
+func (b *BookRepositoryImpl) Delete(ctx context.Context, DB *gorm.DB, bookId string) error {
+	tx := DB.WithContext(ctx).Where("id = ?", bookId).Delete(&entity.Book{})
 
 	if tx.Error != nil {
 		return tx.Error

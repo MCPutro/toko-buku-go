@@ -7,10 +7,10 @@ import (
 )
 
 type BookRepository interface {
-	Save(ctx context.Context, DB *gorm.DB, book *entity.Book) (uint8, error)
+	Save(ctx context.Context, DB *gorm.DB, book *entity.Book) (*entity.Book, error)
 	FindAll(ctx context.Context, DB *gorm.DB) (*[]entity.Book, error)
 	FindByTitle(ctx context.Context, DB *gorm.DB, title string) (*entity.Book, error)
 	FindByTitleAndAuthor(ctx context.Context, DB *gorm.DB, title string, author string) (*entity.Book, error)
-	FindById(ctx context.Context, DB *gorm.DB, id uint8) (*entity.Book, error)
-	Delete(ctx context.Context, DB *gorm.DB, id uint8) error
+	FindById(ctx context.Context, DB *gorm.DB, bookId string) (*entity.Book, error)
+	Delete(ctx context.Context, DB *gorm.DB, bookId string) error
 }

@@ -2,6 +2,6 @@ package helper
 
 type TransactionRequest struct {
 	Customer string
-	BookID   uint8
+	BookID   string
 	Quantity uint8
 }

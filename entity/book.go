@@ -1,7 +1,7 @@
 package entity
 
 type Book struct {
-	ID          uint8 `gorm:"primarykey"`
+	ID          string `gorm:"primarykey"`
 	Title       string
 	Author      string
 	Stock       uint8

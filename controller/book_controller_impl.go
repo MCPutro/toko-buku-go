@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/service"
 	"github.com/gorilla/mux"
@@ -69,7 +68,7 @@ func (b *BookControllerImpl) AddBook(w http.ResponseWriter, r *http.Request) {
 func (b *BookControllerImpl) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 
-	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
+	bookId := param["BookId"]
 
 	var uBook helper.BookRequest
 
@@ -97,9 +96,7 @@ func (b *BookControllerImpl) UpdateBook(w http.ResponseWriter, r *http.Request) 
 		helper.ReadFromRequestBody(r, &uBook)
 	}
 
-	fmt.Println("uBook : ", uBook)
-
-	bookResponse, err := b.service.UpdateBook(r.Context(), uBook, uint8(bookId))
+	bookResponse, err := b.service.UpdateBook(r.Context(), uBook, bookId)
 
 	var webResponse helper.Response
 
@@ -149,9 +146,7 @@ func (b *BookControllerImpl) GetListBook(w http.ResponseWriter, r *http.Request)
 func (b *BookControllerImpl) DeleteBook(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 
-	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
-
-	err := b.service.DeleteBook(r.Context(), uint8(bookId))
+	err := b.service.DeleteBook(r.Context(), param["BookId"])
 
 	var webResponse helper.Response
 
@@ -173,9 +168,7 @@ func (b *BookControllerImpl) DeleteBook(w http.ResponseWriter, r *http.Request) 
 func (b *BookControllerImpl) GetBookById(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 
-	bookId, _ := strconv.ParseUint(param["BookId"], 10, 8)
-
-	bookById, err := b.service.GetBookById(r.Context(), uint8(bookId))
+	bookById, err := b.service.GetBookById(r.Context(), param["BookId"])
 
 	var webResponse helper.Response
 
