@@ -21,6 +21,9 @@ func NewUserService(userRepo repository.UserRepository, DB *gorm.DB, jwt JwtServ
 }
 
 func (u *UserServiceImpl) CreateNewUser(ctx context.Context, user helper.UserCreateRequest) (*helper.UserCreateResponse, error) {
+	trx := u.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+
 	encodePass, err := u.encodePassword(user.Password)
 	if err != nil {
 		return nil, err
@@ -33,7 +36,7 @@ func (u *UserServiceImpl) CreateNewUser(ctx context.Context, user helper.UserCre
 		UserType: user.UserType,
 	}
 
-	UserId, err := u.UserRepo.Save(ctx, u.DB, newUser)
+	UserId, err := u.UserRepo.Save(ctx, trx, newUser)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +50,10 @@ func (u *UserServiceImpl) CreateNewUser(ctx context.Context, user helper.UserCre
 }
 
 func (u *UserServiceImpl) Login(ctx context.Context, user helper.UserLoginRequest) (*helper.UserLoginResponse, error) {
-	existingUser, err := u.UserRepo.FindByEmail(ctx, u.DB, user.Email)
+	trx := u.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+
+	existingUser, err := u.UserRepo.FindByEmail(ctx, trx, user.Email)
 	if err != nil {
 		return nil, err
 	}

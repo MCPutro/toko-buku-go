@@ -10,4 +10,5 @@ type TransactionRepository interface {
 	Save(ctx context.Context, DB *gorm.DB, transaction *entity.Transaction) (uint8, error)
 	FindById(ctx context.Context, DB *gorm.DB, id uint8) (*entity.Transaction, error)
 	FindAll(ctx context.Context, DB *gorm.DB) (*[]entity.Transaction, error)
+	FindByCustomer(ctx context.Context, DB *gorm.DB, Customer string) (*[]entity.Transaction, error)
 }

@@ -101,3 +101,7 @@ func (b *BookRepositoryImpl) Delete(ctx context.Context, DB *gorm.DB, bookId str
 
 	return nil
 }
+
+func (b *BookRepositoryImpl) UpdateStock(ctx context.Context, DB *gorm.DB, bookId string, newStock uint8) error {
+	return DB.WithContext(ctx).Model(&entity.Book{}).Where("id = ?", bookId).Update("stock", newStock).Error
+}

@@ -48,36 +48,41 @@
 <body>
 <h2 style="text-align: center">Buy Book</h2>
 <div class="center">
-    <form action="/belum" method="post">
+    <form action="/transaction" method="post">
         <div class="container">
             <label>
-                <input type="hidden" placeholder="" name="BookId" value="{{.ID}}">
+                <input type="hidden" placeholder="" name="BookId" value="{{.Id}}">
             </label>
             <label for="Title"><b>Title</b></label>
             <label>
-                <input type="text" placeholder="" name="Title" minlength="5" disabled>
+                <input type="text" placeholder="" name="Title" value="{{.Title}}"  disabled>
             </label>
 
             <label for="Author"><b>Author</b></label>
             <label>
-                <input type="text" placeholder="" name="Author" minlength="5" disabled>
+                <input type="text" placeholder="" name="Author" value="{{.Author}}" disabled>
             </label>
 
             <label for="Price"><b>Price</b></label>
             <label>
-                <input type="number" min="1" placeholder="" name="Price" disabled>
+                <input type="number" placeholder="" name="Price" value="{{.Price}}" disabled>
             </label>
 
             <label for="Discount"><b>Discount %</b></label>
             <label>
-                <input type="number" min="0" max="100" placeholder="" name="Discount" disabled>
+                <input type="number" placeholder="" name="Discount" value="{{.Discount}}" disabled>
             </label>
 
             <label for="Qty"><b>Qty</b></label>
+            {{if gt .Stock 10 }}
             <label>
-                <input type="number" min="0" max="100" placeholder="" name="Qty" >
+                <input type="number" min="1" max="10" placeholder="" name="Qty" >
             </label>
-
+            {{else}}
+            <label>
+                <input type="number" min="1" max="{{.Stock}}" placeholder="" name="Qty" >
+            </label>
+            {{end}}
             <button type="submit">Add</button>
 
         </div>

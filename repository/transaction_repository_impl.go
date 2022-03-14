@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"github.com/MCPutro/toko-buku-go/entity"
 	"gorm.io/gorm"
 )
@@ -52,7 +53,22 @@ func (t *TransactionRepositoryImpl) FindAll(ctx context.Context, DB *gorm.DB) (*
 	if resultFindAll.RowsAffected > 0 {
 		return &tmp, nil
 	} else {
-		return nil, nil
+		return nil, errors.New("no data transaction")
+	}
+}
+
+func (t *TransactionRepositoryImpl) FindByCustomer(ctx context.Context, DB *gorm.DB, Customer string) (*[]entity.Transaction, error) {
+	var tmp []entity.Transaction
+
+	trxByCustomer := DB.WithContext(ctx).Where("customer = ?", Customer).Find(&tmp)
+
+	if trxByCustomer.Error != nil {
+		return nil, trxByCustomer.Error
 	}
 
+	if trxByCustomer.RowsAffected > 0 {
+		return &tmp, nil
+	} else {
+		return nil, errors.New("no data transaction")
+	}
 }

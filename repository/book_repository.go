@@ -13,4 +13,5 @@ type BookRepository interface {
 	FindByTitleAndAuthor(ctx context.Context, DB *gorm.DB, title string, author string) (*entity.Book, error)
 	FindById(ctx context.Context, DB *gorm.DB, bookId string) (*entity.Book, error)
 	Delete(ctx context.Context, DB *gorm.DB, bookId string) error
+	UpdateStock(ctx context.Context, DB *gorm.DB, bookId string, newStock uint8) error
 }

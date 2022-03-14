@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/MCPutro/toko-buku-go/entity"
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/repository"
@@ -22,7 +23,10 @@ func NewTransactionService(trxRepo repository.TransactionRepository, bookRepo re
 }
 
 func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.TransactionRequest) (*entity.Transaction, error) {
-	book, err := t.BookRepo.FindById(ctx, t.db, request.BookID)
+	tx := t.db.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	book, err := t.BookRepo.FindById(ctx, tx, request.BookID)
 	if err != nil {
 		return nil, errors.New("book not found")
 	}
@@ -45,11 +49,19 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 		Total:    amount,
 	}
 
-	trxId, err2 := t.TrxRepo.Save(ctx, t.db, newTrx)
+	trxId, errCreateTrx := t.TrxRepo.Save(ctx, tx, newTrx)
 
-	if err2 != nil {
+	if errCreateTrx != nil {
+		fmt.Println("??")
+		panic(errCreateTrx)
+	} else {
 		//update stock
-
+		newStock := book.Stock - newTrx.Quantity
+		errUpdateStock := t.BookRepo.UpdateStock(ctx, tx, book.ID, newStock)
+		if errUpdateStock != nil {
+			fmt.Println(errUpdateStock)
+			panic(errUpdateStock)
+		}
 	}
 
 	newTrx.ID = trxId

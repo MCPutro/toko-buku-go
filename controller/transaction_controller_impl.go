@@ -8,7 +8,8 @@ import (
 )
 
 type TransactionControllerImpl struct {
-	service service.TransactionService
+	service     service.TransactionService
+	bookService service.BookService
 }
 
 func NewTransactionController(service service.TransactionService) TransactionController {
@@ -42,14 +43,14 @@ func (t *TransactionControllerImpl) BuyBook(w http.ResponseWriter, r *http.Reque
 		helper.ReadFromRequestBody(r, &trxRequest)
 	}
 
-	transaction, err := t.service.BuyBook(r.Context(), trxRequest)
+	transaction, errBuyBook := t.service.BuyBook(r.Context(), trxRequest)
 
 	var webResponse helper.Response
 
-	if err != nil {
+	if errBuyBook != nil {
 		webResponse = helper.Response{
 			Status:  "error",
-			Message: err.Error(),
+			Message: errBuyBook.Error(),
 			Data:    nil,
 		}
 	} else {

@@ -64,6 +64,7 @@ func main() {
 	r.HandleFunc("/BookInfoFormAdmin/{BookId}", BookInfoFormAdmin).Methods(http.MethodGet)
 	//customer
 	r.HandleFunc("/listBook", ListBook).Methods(http.MethodGet)
+	r.HandleFunc("/buy/{BookId}", BuyBook).Methods(http.MethodGet)
 
 	err2 := http.ListenAndServe(":8080", middleware.NewMiddleware(r, jwtService))
 	if err2 != nil {
@@ -145,4 +146,20 @@ func ListBook(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+}
+
+func BuyBook(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+
+	bookById, err := bookService.GetBookById(r.Context(), param["BookId"])
+
+	if err != nil {
+		return
+	}
+
+	err2 := t.MyTemplates.ExecuteTemplate(w, "buyBook.gohtml", bookById)
+	if err2 != nil {
+		return
+	}
+
 }

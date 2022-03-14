@@ -19,6 +19,9 @@ func NewBookService(bookRepo repository.BookRepository, DB *gorm.DB) BookService
 }
 
 func (b *BookServiceImpl) AddBook(ctx context.Context, book helper.BookRequest) (*helper.BookResponse, error) {
+	trx := b.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+
 	newBook := &entity.Book{
 		ID:       uuid.New().String(),
 		Title:    book.Title,
@@ -27,7 +30,7 @@ func (b *BookServiceImpl) AddBook(ctx context.Context, book helper.BookRequest) 
 		Price:    book.Price,
 		Discount: book.Discount,
 	}
-	nBook, err := b.Repository.Save(ctx, b.DB, newBook)
+	nBook, err := b.Repository.Save(ctx, trx, newBook)
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +46,9 @@ func (b *BookServiceImpl) AddBook(ctx context.Context, book helper.BookRequest) 
 }
 
 func (b *BookServiceImpl) UpdateBook(ctx context.Context, uBook helper.BookRequest, BookId string) (*helper.BookResponse, error) {
+	trx := b.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+
 	Book := &entity.Book{
 		ID:       BookId,
 		Title:    uBook.Title,
@@ -52,7 +58,7 @@ func (b *BookServiceImpl) UpdateBook(ctx context.Context, uBook helper.BookReque
 		Discount: uBook.Discount,
 	}
 
-	bookSaved, err := b.Repository.Save(ctx, b.DB, Book)
+	bookSaved, err := b.Repository.Save(ctx, trx, Book)
 
 	if err != nil {
 		return nil, err
@@ -68,8 +74,17 @@ func (b *BookServiceImpl) UpdateBook(ctx context.Context, uBook helper.BookReque
 	}, nil
 }
 
+func (b *BookServiceImpl) UpdateStock(ctx context.Context, BookId string, newStock uint8) error {
+	trx := b.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+	return b.Repository.UpdateStock(ctx, trx, BookId, newStock)
+}
+
 func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookResponse, error) {
-	books, err := b.Repository.FindAll(ctx, b.DB)
+	trx := b.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+
+	books, err := b.Repository.FindAll(ctx, trx)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +110,10 @@ func (b *BookServiceImpl) GetListBook(ctx context.Context) (*[]helper.BookRespon
 }
 
 func (b *BookServiceImpl) DeleteBook(ctx context.Context, bookId string) error {
-	err := b.Repository.Delete(ctx, b.DB, bookId)
+	trx := b.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+
+	err := b.Repository.Delete(ctx, trx, bookId)
 
 	if err != nil {
 		return err
@@ -105,7 +123,10 @@ func (b *BookServiceImpl) DeleteBook(ctx context.Context, bookId string) error {
 }
 
 func (b *BookServiceImpl) GetBookById(ctx context.Context, bookId string) (*helper.BookResponse, error) {
-	book, err := b.Repository.FindById(ctx, b.DB, bookId)
+	trx := b.DB.Begin()
+	defer helper.CommitOrRollback(trx)
+
+	book, err := b.Repository.FindById(ctx, trx, bookId)
 
 	if err != nil {
 		return nil, err
