@@ -7,6 +7,7 @@ import (
 	"github.com/MCPutro/toko-buku-go/entity"
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/repository"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 )
@@ -41,6 +42,7 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 	amount := total - discount
 
 	newTrx := &entity.Transaction{
+		Id:       uuid.New().String(),
 		Date:     time.Now(),
 		Customer: request.Customer,
 		BookID:   request.BookID,
@@ -52,8 +54,9 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 	trxId, errCreateTrx := t.TrxRepo.Save(ctx, tx, newTrx)
 
 	if errCreateTrx != nil {
-		fmt.Println("??")
 		panic(errCreateTrx)
+
+		return nil, errCreateTrx
 	} else {
 		//update stock
 		newStock := book.Stock - newTrx.Quantity
@@ -64,7 +67,7 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 		}
 	}
 
-	newTrx.ID = trxId
+	newTrx.Id = trxId
 
 	return newTrx, nil
 }

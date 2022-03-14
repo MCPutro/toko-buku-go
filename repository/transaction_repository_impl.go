@@ -14,14 +14,14 @@ func NewTransactionRepository() TransactionRepository {
 	return &TransactionRepositoryImpl{}
 }
 
-func (t *TransactionRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, transaction *entity.Transaction) (uint8, error) {
+func (t *TransactionRepositoryImpl) Save(ctx context.Context, DB *gorm.DB, transaction *entity.Transaction) (string, error) {
 	result := DB.WithContext(ctx).Create(&transaction)
 
 	if result.Error != nil {
-		return 0, result.Error
+		return "", result.Error
 	}
 
-	return transaction.ID, nil
+	return transaction.Id, nil
 
 }
 

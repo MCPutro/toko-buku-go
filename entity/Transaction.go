@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Transaction struct {
-	ID       uint8 `gorm:"primarykey"`
+	Id       string `gorm:"primarykey"`
 	Date     time.Time
 	Customer string
 	BookID   string
