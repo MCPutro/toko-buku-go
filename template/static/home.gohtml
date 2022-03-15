@@ -1,22 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Sign In</title>
     <style>
-        body {font-family: Arial, Helvetica, sans-serif;}
-        a.button {
-            -webkit-appearance: button;
-            -moz-appearance: button;
-            appearance: auto;
+        html,body {
+            background: #F5F5F5;
+            /*height: 100%;*/
+            /*width: 100%;*/
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
+        .container {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        #SignIn {
+            background-color: white;
+            color: #008CBA;
+            border: 2px solid #008CBA;
+            padding: 10px 24px;
+            text-align: center;
             text-decoration: none;
-            color: initial;
+            display: inline-block;
+            border-radius: 4px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #SignIn:hover {
+            background-color: #008CBA;
+            color: white;
         }
     </style>
 </head>
 <body>
-<h1>TOKO BUKU</h1>
-<a href="{{.}}" class="button">Sign In</a>
+<div class="container">
+    <div class="content">
+        <h2 style="text-align: center">Toko Buku</h2>
+        <a href="{{.}}" id="SignIn">Sign In</a>
+    </div>
+</div>
 </body>
 </html>
