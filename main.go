@@ -53,6 +53,7 @@ func main() {
 	restBook.HandleFunc("/Delete/{BookId}", bookController.DeleteBook).Methods(http.MethodGet)
 
 	r.HandleFunc("/transaction", transactionController.BuyBook).Methods(http.MethodPost)
+	r.HandleFunc("/transaction/history/{Email}", transactionController.GetTransactionListByEmail).Methods(http.MethodGet)
 
 	//form ui website
 	r.HandleFunc("/", home).Methods(http.MethodGet)
@@ -65,6 +66,7 @@ func main() {
 	//customer
 	r.HandleFunc("/listBook", ListBook).Methods(http.MethodGet)
 	r.HandleFunc("/buy/{BookId}", BuyBook).Methods(http.MethodGet)
+	r.HandleFunc("/transaction/history", transactionController.GetTransactionListByEmail).Methods(http.MethodGet)
 
 	err2 := http.ListenAndServe(":8080", middleware.NewMiddleware(r, jwtService))
 	if err2 != nil {
@@ -163,3 +165,19 @@ func BuyBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+//func historyTransaction(w http.ResponseWriter, r *http.Request) {
+//	param := mux.Vars(r)
+//
+//	trxByCustomerEmail, _ := transactionService.FindByCustomerEmail(r.Context(), param["Email"])
+//
+//	data := map[string]interface{}{
+//		"Email": param["Email"],
+//		"Trx":   trxByCustomerEmail,
+//	}
+//
+//	err := t.MyTemplates.ExecuteTemplate(w, "transactions.gohtml", data)
+//	if err != nil {
+//		return
+//	}
+//}

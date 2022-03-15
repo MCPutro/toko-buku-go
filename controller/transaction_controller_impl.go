@@ -3,6 +3,8 @@ package controller
 import (
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/service"
+	"github.com/MCPutro/toko-buku-go/template"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
@@ -62,6 +64,46 @@ func (t *TransactionControllerImpl) BuyBook(w http.ResponseWriter, r *http.Reque
 
 	if contentType == "application/x-www-form-urlencoded" {
 		http.Redirect(w, r, "/listBook", http.StatusSeeOther)
+	} else {
+		helper.WriteToResponseBody(w, webResponse)
+	}
+
+}
+
+func (t *TransactionControllerImpl) GetTransactionListByEmail(w http.ResponseWriter, r *http.Request) {
+	//contentType := r.Header.Get("Content-Type")
+	st := r.Header.Get("Sec-Ch-Ua")
+
+	var email string
+	if st != "" {
+		email = helper.GetCookie(r, "email")
+	} else {
+		param := mux.Vars(r)
+		email = param["Email"]
+	}
+
+	trxByCustomer, err := t.service.FindByCustomerEmail(r.Context(), email)
+
+	var webResponse helper.Response
+
+	if err != nil {
+		webResponse = helper.Response{
+			Status:  "error",
+			Message: err.Error(),
+			Data:    nil,
+		}
+	} else {
+		webResponse = helper.Response{
+			Status: "success",
+			Data:   trxByCustomer,
+		}
+	}
+
+	if st != "" {
+		err := template.MyTemplates.ExecuteTemplate(w, "transactions.gohtml", trxByCustomer)
+		if err != nil {
+			return
+		}
 	} else {
 		helper.WriteToResponseBody(w, webResponse)
 	}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>List Book</title>
+    <style>
+        #books, h2{
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            counter-reset: rowNumber;
+        }
+
+        #books td, #books th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #books tr:nth-child(even){background-color: #f2f2f2;}
+
+        #books tr:hover {background-color: #ddd;}
+
+        #books tr:not(:first-child) {
+            counter-increment: rowNumber;
+        }
+
+        #books tr td:first-child::before {
+            content: counter(rowNumber);
+            min-width: 1em;
+            margin-right: 0em;
+        }
+
+        #books th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        a:hover, a:active {
+            background-color: red;
+        }
+
+        .center {
+            margin: auto;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+<h2 style="text-align: center">Transaction</h2>
+
+<div class="center">
+    <table id="books">
+        <tr>
+            <th>#</th>
+            <th>Transaction Time</th>
+            <th>Book Title</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Discount %</th>
+            <th>Total</th>
+        </tr>
+        {{range $indexElement, $element := .}}
+            <tr>
+                <td style="text-align: center">.</td>
+                <td style="color:red;">{{$element.Date}}</td>
+                <td>{{$element.BookTitle}}</td>
+                <td style="text-align: center">{{$element.Quantity}}</td>
+                <td style="text-align: center">{{$element.Price}}</td>
+                <td style="text-align: center">{{$element.Discount}}</td>
+                <td style="text-align: center">{{$element.Total}}</td>
+            </tr>
+        {{end}}
+    </table>
+
+</div>
+</body>
+</html>
+
+

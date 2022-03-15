@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/MCPutro/toko-buku-go/entity"
+	"github.com/MCPutro/toko-buku-go/helper"
 	"gorm.io/gorm"
 )
 
@@ -71,4 +72,42 @@ func (t *TransactionRepositoryImpl) FindByCustomer(ctx context.Context, DB *gorm
 	} else {
 		return nil, errors.New("no data transaction")
 	}
+}
+
+func (t *TransactionRepositoryImpl) FindByCustomer2(ctx context.Context, DB *gorm.DB, email string) (*[]helper.TransactionResponse, error) {
+
+	var transactions []helper.TransactionResponse
+
+	err := DB.WithContext(ctx).Raw("select  t.id, t.\"date\", t.customer, t.book_id, b.title as book_title, b.price, t.quantity, t.discount, t.total  from  transactions t, books b where t.book_id = b.id and t.customer = ?", email).Scan(&transactions).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &transactions, nil
+
+	//rows, err := DB.WithContext(ctx).
+	//	Raw("select  t.id, t.\"date\", t.customer, t.book_id, b.title as book_title, b.price, t.quantity, t.discount, t.total  from  transactions t, books b where t.book_id = b.id and t.customer = ?", email).
+	//	Rows()
+	//
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//defer rows.Close()
+	//
+	//var transaction helper.TransactionResponse
+	//for rows.Next() {
+	//	err2 := rows.Scan(&transaction.Id, &transaction.Date, &transaction.Customer, &transaction.BookID, &transaction.BookTitle, &transaction.Price, &transaction.Quantity, &transaction.Discount, &transaction.Total)
+	//	if err2 != nil {
+	//		fmt.Println("error print :", err2)
+	//	}
+	//	fmt.Println(transaction)
+	//	transactions = append(transactions, transaction)
+	//}
+	//
+	//fmt.Println("---")
+	//fmt.Println(transactions)
+	//
+	//return &transactions, nil
 }

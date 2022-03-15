@@ -23,7 +23,7 @@ func NewTransactionService(trxRepo repository.TransactionRepository, bookRepo re
 	return &TransactionServiceImpl{TrxRepo: trxRepo, BookRepo: bookRepo, db: db}
 }
 
-func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.TransactionRequest) (*entity.Transaction, error) {
+func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.TransactionRequest) (*helper.TransactionResponse, error) {
 	tx := t.db.Begin()
 	defer helper.CommitOrRollback(tx)
 
@@ -38,7 +38,7 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 	}
 
 	total := float32(request.Quantity) * book.Price
-	discount := total * float32(book.Discount/100)
+	discount := total * (float32(book.Discount) / 100)
 	amount := total - discount
 
 	newTrx := &entity.Transaction{
@@ -67,7 +67,48 @@ func (t *TransactionServiceImpl) BuyBook(ctx context.Context, request helper.Tra
 		}
 	}
 
-	newTrx.Id = trxId
+	return &helper.TransactionResponse{
+		Id:       trxId,
+		Date:     newTrx.Date,
+		Customer: newTrx.Customer,
+		BookID:   newTrx.BookID,
+		Price:    book.Price,
+		Quantity: newTrx.Quantity,
+		Discount: newTrx.Discount,
+		Total:    newTrx.Total,
+	}, nil
+}
 
-	return newTrx, nil
+func (t *TransactionServiceImpl) FindByCustomerEmail(ctx context.Context, email string) (*[]helper.TransactionResponse, error) {
+	tx := t.db.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	trxByCustomer, err := t.TrxRepo.FindByCustomer2(ctx, tx, email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var resp []helper.TransactionResponse
+
+	for _, trx := range *trxByCustomer {
+		resp = append(resp, helper.TransactionResponse{
+			Id:        trx.Id,
+			Date:      trx.Date,
+			Customer:  trx.Customer,
+			BookID:    trx.BookID,
+			BookTitle: trx.BookTitle,
+			Price:     trx.Price,
+			Quantity:  trx.Quantity,
+			Discount:  trx.Discount,
+			Total:     trx.Total,
+		})
+	}
+
+	if len(resp) == 0 {
+		return nil, errors.New("data not found")
+	} else {
+		return &resp, nil
+	}
+
 }
