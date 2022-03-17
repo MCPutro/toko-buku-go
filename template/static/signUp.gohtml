@@ -1,0 +1,97 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Sign In</title>
+    <style>
+        html,body {
+            background: #F5F5F5;
+            /*height: 100%;*/
+            /*width: 100%;*/
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        form {
+            background:white;
+            margin: auto;
+            width: 60%;
+            border: 3px solid #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .formContainer{
+            padding:16px;
+        }
+        input[type=email], input[type=password], input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #04AA6D;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <h2 style="text-align: center">Sign Up</h2>
+        <form action="/user/SignUp" method="post">
+            <div class="formContainer">
+                <label for="Email"><b>Email</b></label>
+                <label>
+                    <input type="email" placeholder="Enter Email" name="Email" required>
+                </label>
+
+                <label for="Username"><b>Username</b></label>
+                <label>
+                    <input type="text" placeholder="Enter Username" name="Username" minlength="5" maxlength="10"  required>
+                </label>
+
+                <label for="Password"><b>Password</b></label>
+                <label>
+                    <input type="password" placeholder="Enter Password" name="Password" required>
+                </label>
+
+                <label style="text-align: center"><b>User Type</b></label><br/>
+                <label>
+                    <input type="radio" id="Admin" name="UserType" value="0">
+                </label>
+                <label for="Admin">Admin</label>
+
+                <label>
+                    <input type="radio" id="Customer" name="UserType" value="1">
+                </label>
+                <label for="Customer">Customer</label>
+
+                <br/>
+                <button type="submit">Sign In</button>
+
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

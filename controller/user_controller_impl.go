@@ -6,6 +6,7 @@ import (
 	"github.com/MCPutro/toko-buku-go/helper"
 	"github.com/MCPutro/toko-buku-go/service"
 	"net/http"
+	"strconv"
 )
 
 type UserControllerImpl struct {
@@ -18,28 +19,35 @@ func NewUserController(service service.UserService) UserController {
 
 func (u *UserControllerImpl) SignUp(w http.ResponseWriter, r *http.Request) {
 	var newUser helper.UserCreateRequest
-	helper.ReadFromRequestBody(r, &newUser)
+
+	contentType := r.Header.Get("Content-Type")
+	if contentType == "application/x-www-form-urlencoded" {
+		err := r.ParseForm()
+		if err != nil {
+			helper.WriteToResponseBody(w, err)
+			return
+		}
+
+		i, _ := strconv.ParseInt(r.PostFormValue("UserType"), 10, 8)
+
+		newUser = helper.UserCreateRequest{
+			Email:    r.PostFormValue("Email"),
+			UserName: r.PostFormValue("Username"),
+			Password: r.PostFormValue("Password"),
+			UserType: entity.UserType(i),
+		}
+	} else {
+		helper.ReadFromRequestBody(r, &newUser)
+	}
 
 	newUserResponse, err := u.service.CreateNewUser(r.Context(), newUser)
 
-	helper.WriteToResponseBody2(w, err, newUserResponse)
+	if contentType == "application/x-www-form-urlencoded" {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	} else {
+		helper.WriteToResponseBody2(w, err, newUserResponse)
+	}
 
-	//var webResponse helper.Response
-	//
-	//if err != nil {
-	//	webResponse = helper.Response{
-	//		Status:  "error",
-	//		Message: err.Error(),
-	//		Data:    nil,
-	//	}
-	//} else {
-	//	webResponse = helper.Response{
-	//		Status: "success",
-	//		Data:   newUserResponse,
-	//	}
-	//}
-	//
-	//helper.WriteToResponseBody(w, webResponse)
 }
 
 func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -64,22 +72,6 @@ func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	loginResponse, err := u.service.Login(r.Context(), userLogin)
 
-	var webResponse helper.Response
-
-	if err != nil {
-		webResponse = helper.Response{
-			Status:  "error",
-			Message: err.Error(),
-			Data:    nil,
-		}
-	} else {
-		webResponse = helper.Response{
-			Status:  "success",
-			Message: "",
-			Data:    loginResponse,
-		}
-	}
-
 	if contentType == "application/x-www-form-urlencoded" {
 		helper.SetCookie(w, "email", userLogin.Email, 60)
 		helper.SetCookie(w, "token", loginResponse.Token, 60)
@@ -90,7 +82,7 @@ func (u *UserControllerImpl) SignIn(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/listBook", http.StatusSeeOther)
 		}
 	} else {
-		helper.WriteToResponseBody(w, webResponse)
+		helper.WriteToResponseBody2(w, err, loginResponse)
 	}
 
 }

@@ -58,6 +58,7 @@ func main() {
 	//form ui website
 	r.HandleFunc("/", home).Methods(http.MethodGet)
 	r.HandleFunc("/login", SignInForm).Methods(http.MethodGet)
+	r.HandleFunc("/SignUp", SignUpForm).Methods(http.MethodGet)
 	//admin
 	r.HandleFunc("/listBookAdmin", ListBookAdmin).Methods(http.MethodGet)
 	r.HandleFunc("/DeleteBookAdmin/{BookId}", DeleteBookAdmin).Methods(http.MethodGet)
@@ -75,14 +76,27 @@ func main() {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	err := t.MyTemplates.ExecuteTemplate(w, "home.gohtml", "/login")
+
+	data := map[string]string{
+		"signIn": "/login",
+		"signUp": "/SignUp",
+	}
+
+	err := t.MyTemplates.ExecuteTemplate(w, "home.gohtml", data)
 	if err != nil {
 		return
 	}
 }
 
 func SignInForm(w http.ResponseWriter, r *http.Request) {
-	err := t.MyTemplates.ExecuteTemplate(w, "login.gohtml", nil)
+	err := t.MyTemplates.ExecuteTemplate(w, "signIn.gohtml", nil)
+	if err != nil {
+		return
+	}
+}
+
+func SignUpForm(w http.ResponseWriter, r *http.Request) {
+	err := t.MyTemplates.ExecuteTemplate(w, "signUp.gohtml", nil)
 	if err != nil {
 		return
 	}
