@@ -47,25 +47,26 @@ func (t *TransactionControllerImpl) BuyBook(w http.ResponseWriter, r *http.Reque
 
 	transaction, errBuyBook := t.service.BuyBook(r.Context(), trxRequest)
 
-	var webResponse helper.Response
-
-	if errBuyBook != nil {
-		webResponse = helper.Response{
-			Status:  "error",
-			Message: errBuyBook.Error(),
-			Data:    nil,
-		}
-	} else {
-		webResponse = helper.Response{
-			Status: "success",
-			Data:   transaction,
-		}
-	}
+	//var webResponse helper.Response
+	//
+	//if errBuyBook != nil {
+	//	webResponse = helper.Response{
+	//		Status:  "error",
+	//		Message: errBuyBook.Error(),
+	//		Data:    nil,
+	//	}
+	//} else {
+	//	webResponse = helper.Response{
+	//		Status: "success",
+	//		Data:   transaction,
+	//	}
+	//}
 
 	if contentType == "application/x-www-form-urlencoded" {
 		http.Redirect(w, r, "/listBook", http.StatusSeeOther)
 	} else {
-		helper.WriteToResponseBody(w, webResponse)
+		//helper.WriteToResponseBody(w, webResponse)
+		helper.WriteToResponseBody2(w, errBuyBook, transaction)
 	}
 
 }
@@ -84,20 +85,20 @@ func (t *TransactionControllerImpl) GetTransactionListByEmail(w http.ResponseWri
 
 	trxByCustomer, err := t.service.FindByCustomerEmail(r.Context(), email)
 
-	var webResponse helper.Response
-
-	if err != nil {
-		webResponse = helper.Response{
-			Status:  "error",
-			Message: err.Error(),
-			Data:    nil,
-		}
-	} else {
-		webResponse = helper.Response{
-			Status: "success",
-			Data:   trxByCustomer,
-		}
-	}
+	//var webResponse helper.Response
+	//
+	//if err != nil {
+	//	webResponse = helper.Response{
+	//		Status:  "error",
+	//		Message: err.Error(),
+	//		Data:    nil,
+	//	}
+	//} else {
+	//	webResponse = helper.Response{
+	//		Status: "success",
+	//		Data:   trxByCustomer,
+	//	}
+	//}
 
 	if st != "" {
 		err := template.MyTemplates.ExecuteTemplate(w, "transactions.gohtml", trxByCustomer)
@@ -105,7 +106,8 @@ func (t *TransactionControllerImpl) GetTransactionListByEmail(w http.ResponseWri
 			return
 		}
 	} else {
-		helper.WriteToResponseBody(w, webResponse)
+		//helper.WriteToResponseBody(w, webResponse)
+		helper.WriteToResponseBody2(w, err, trxByCustomer)
 	}
 
 }

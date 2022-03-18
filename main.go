@@ -29,6 +29,8 @@ var (
 	transactionRepository = repository.NewTransactionRepository()
 	transactionService    = service.NewTransactionService(transactionRepository, bookRepository, db)
 	transactionController = controller.NewTransactionController(transactionService)
+
+	authCheck = middleware.NewAuthCheck(jwtService)
 )
 
 func main() {
@@ -46,30 +48,31 @@ func main() {
 	//restUser.HandleFunc("/Books", bookController.GetListBook).Methods(http.MethodGet)
 
 	restBook := r.PathPrefix("/book").Subrouter()
+	restBook.Use(authCheck.AuthAdmin)
 	restBook.HandleFunc("/Add", bookController.AddBook).Methods(http.MethodPost)
 	restBook.HandleFunc("/All", bookController.GetListBook).Methods(http.MethodGet)
 	restBook.HandleFunc("/{BookId}", bookController.GetBookById).Methods(http.MethodGet)
 	restBook.HandleFunc("/Update/{BookId}", bookController.UpdateBook).Methods(http.MethodPost)
 	restBook.HandleFunc("/Delete/{BookId}", bookController.DeleteBook).Methods(http.MethodGet)
 
-	r.HandleFunc("/transaction", transactionController.BuyBook).Methods(http.MethodPost)
-	r.HandleFunc("/transaction/history/{Email}", transactionController.GetTransactionListByEmail).Methods(http.MethodGet)
+	r.Handle("/transaction", authCheck.AuthCustomer(http.HandlerFunc(transactionController.BuyBook))).Methods(http.MethodPost)
+	r.Handle("/transaction/history/{Email}", authCheck.AuthCustomer(http.HandlerFunc(transactionController.GetTransactionListByEmail))).Methods(http.MethodGet)
 
 	//form ui website
 	r.HandleFunc("/", home).Methods(http.MethodGet)
 	r.HandleFunc("/login", SignInForm).Methods(http.MethodGet)
 	r.HandleFunc("/SignUp", SignUpForm).Methods(http.MethodGet)
 	//admin
-	r.HandleFunc("/listBookAdmin", ListBookAdmin).Methods(http.MethodGet)
-	r.HandleFunc("/DeleteBookAdmin/{BookId}", DeleteBookAdmin).Methods(http.MethodGet)
-	r.HandleFunc("/AddBookFormAdmin", AddBookForm).Methods(http.MethodGet)
-	r.HandleFunc("/BookInfoFormAdmin/{BookId}", BookInfoFormAdmin).Methods(http.MethodGet)
+	r.Handle("/listBookAdmin", authCheck.AuthAdmin(http.HandlerFunc(ListBookAdmin))).Methods(http.MethodGet)
+	r.Handle("/DeleteBookAdmin/{BookId}", authCheck.AuthAdmin(http.HandlerFunc(DeleteBookAdmin))).Methods(http.MethodGet)
+	r.Handle("/AddBookFormAdmin", authCheck.AuthAdmin(http.HandlerFunc(AddBookForm))).Methods(http.MethodGet)
+	r.Handle("/BookInfoFormAdmin/{BookId}", authCheck.AuthAdmin(http.HandlerFunc(BookInfoFormAdmin))).Methods(http.MethodGet)
 	//customer
-	r.HandleFunc("/listBook", ListBook).Methods(http.MethodGet)
-	r.HandleFunc("/buy/{BookId}", BuyBook).Methods(http.MethodGet)
-	r.HandleFunc("/transaction/history", transactionController.GetTransactionListByEmail).Methods(http.MethodGet)
+	r.Handle("/listBook", authCheck.AuthCustomer(http.HandlerFunc(ListBook))).Methods(http.MethodGet)
+	r.Handle("/buy/{BookId}", authCheck.AuthCustomer(http.HandlerFunc(BuyBook))).Methods(http.MethodGet)
+	r.Handle("/transaction/history", authCheck.AuthCustomer(http.HandlerFunc(transactionController.GetTransactionListByEmail))).Methods(http.MethodGet)
 
-	err2 := http.ListenAndServe(":8080", middleware.NewMiddleware(r, jwtService))
+	err2 := http.ListenAndServe(":8080", r) //http.ListenAndServe(":8080", middleware.NewMiddleware(r, jwtService))
 	if err2 != nil {
 		helper.PanicIfError(err2)
 	}
@@ -179,19 +182,3 @@ func BuyBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-
-//func historyTransaction(w http.ResponseWriter, r *http.Request) {
-//	param := mux.Vars(r)
-//
-//	trxByCustomerEmail, _ := transactionService.FindByCustomerEmail(r.Context(), param["Email"])
-//
-//	data := map[string]interface{}{
-//		"Email": param["Email"],
-//		"Trx":   trxByCustomerEmail,
-//	}
-//
-//	err := t.MyTemplates.ExecuteTemplate(w, "transactions.gohtml", data)
-//	if err != nil {
-//		return
-//	}
-//}
